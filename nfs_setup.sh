@@ -2,11 +2,11 @@
 
 set -e
 
-mounts="${@}"
-
-for mnt in "${mounts[@]}"; do
-  src=$(echo $mnt | awk -F':' '{ print $1 }')
-  echo "$src *(rw,sync,no_subtree_check,fsid=0,no_root_squash)" >> /etc/exports
+fsid=0
+for i in "$@"; do
+  mkdir -p $i
+  echo "$i *(rw,async,no_root_squash,insecure,fsid=$fsid)" >> /etc/exports
+  fsid=$(($fsid + 1))
 done
 
 exec runsvdir /etc/sv
